@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Light Sensor</title>
+  <script>
+    function sendLightLevelToMiniProgram(isTorchOn) {
+      // 发送数据到小程序
+      const data = { isTorchOn };
+      window.parent.postMessage(data, '*');
+    }
+
+    if ('AmbientLightSensor' in window) {
+      const sensor = new AmbientLightSensor();
+      sensor.addEventListener('reading', () => {
+        const lightLevel = sensor.illuminance;
+        const threshold = 30;  // 设置阈值，单位是lux
+
+        // 判断是否需要打开手电筒
+        const isTorchOn = lightLevel < threshold;
+        sendLightLevelToMiniProgram(isTorchOn);
+      });
+      sensor.start();
+    } else {
+      console.log('环境光传感器不支持');
+    }
+  </script>
+</head>
+<body>
+  <h1>光照传感器控制手电筒</h1>
+</body>
+</html>
